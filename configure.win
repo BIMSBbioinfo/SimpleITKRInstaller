@@ -65,7 +65,7 @@ export MAKEJ
     -DCMAKE_BUILD_TYPE=MinSizeRel \
     -DITK_USE_BUILD_DIR:BOOL=ON \
     ${ADDITIONAL_SITK_MODULES} \
-    "${BUILDDIR}/SuperBuild/"
+    "${BUILDDIR}/SimpleITK/SuperBuild/"
 
   echo "Parallel build using -j${MAKEJ}"
   # Build the specific target with parallel jobs
