@@ -18,6 +18,11 @@ fi
 RCALL="${R_HOME}/bin/Rscript.exe"
 export RCALL
 
+# --- Build location: short path to avoid ITK limit ---
+BUILDDIR="C:/bld"
+echo "Using short build directory: $BUILDDIR"
+mkdir -p "$BUILDDIR"
+
 # Pull compiler flags from R (optional but kept for parity)
 CC="$("${R_HOME}/bin/R.exe" CMD config CC)"
 CXX="$("${R_HOME}/bin/R.exe" CMD config CXX)"
@@ -31,9 +36,8 @@ export CC CXX CFLAGS CXXFLAGS CPPFLAGS
 export MAKEJ
 
 # --- Build in SITK directory ---
-mkdir -p SITK
 (
-  cd SITK
+  cd "$BUILDDIR"
 
   if [ ! -d SimpleITK ]; then
     git clone "$SimpleITKGit"
@@ -61,7 +65,7 @@ mkdir -p SITK
     -DCMAKE_BUILD_TYPE=MinSizeRel \
     -DITK_USE_BUILD_DIR:BOOL=ON \
     ${ADDITIONAL_SITK_MODULES} \
-    "${SITK_SRC}/SuperBuild/"
+    "${BUILDDIR}/SuperBuild/"
 
   echo "Parallel build using -j${MAKEJ}"
   # Build the specific target with parallel jobs
