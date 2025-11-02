@@ -79,7 +79,7 @@ jobs:
       if: startsWith(matrix.os, 'windows')
       shell: pwsh
       run: |
-        Rscript -e "install.packages('remotes', lib='${env:R_LIBS}', repos='https://cloud.r-project.org/')"
+        Rscript -e "lib <- Sys.getenv('R_LIBS'); lib <- normalizePath(lib, winslash='/', mustWork=FALSE); dir.create(lib, recursive=TRUE, showWarnings=FALSE); install.packages('remotes', lib=lib, repos='https://cloud.r-project.org/')"
 
     - name: Build and test (Windows)
       if: startsWith(matrix.os, 'windows')
@@ -87,4 +87,4 @@ jobs:
       env:
         ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS: 2
       run: |
-        Rscript -e "remotes::install_git('.', lib='${env:R_LIBS}', configure.vars=c('MAKEJ=2'))"
+        Rscript -e "lib <- Sys.getenv('R_LIBS'); remotes::install_git('.', lib=lib, configure.vars=c('MAKEJ=2'))"
