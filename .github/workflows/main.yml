@@ -42,13 +42,26 @@ jobs:
         sudo apt-get -y update &&
         sudo apt-get install -y libcurl4-openssl-dev libssh2-1-dev libharfbuzz-dev libfribidi-dev gh &&
         sudo rm -rf /var/lib/apt/lists/*
+        
     - name: Configuration Information
-      run: |
+       if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+       run: |
         mkdir ${R_LIBS}
         c++ --version
         cmake --version
         which R
         R --version
+        
+    - name: Configuration Information (win)
+       if: startsWith(matrix.os, 'windows')
+       shell: pwsh
+       run: |
+        New-Item -ItemType Directory -Force -Path "$env:R_LIBS" | Out-Null
+        g++ --version
+        cmake --version
+        Get-Command R.exe
+        R.exe --version
+        
     - name: Install R packages
       run: |
         R -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
