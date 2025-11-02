@@ -44,8 +44,8 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         
     - name: Configuration Information
-       if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-       run: |
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+      run: |
         mkdir ${R_LIBS}
         c++ --version
         cmake --version
@@ -53,9 +53,9 @@ jobs:
         R --version
         
     - name: Configuration Information (win)
-       if: startsWith(matrix.os, 'windows')
-       shell: pwsh
-       run: |
+      if: startsWith(matrix.os, 'windows')
+      shell: pwsh
+      run: |
         New-Item -ItemType Directory -Force -Path "$env:R_LIBS" | Out-Null
         g++ --version
         cmake --version
