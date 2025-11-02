@@ -64,9 +64,8 @@ jobs:
         
     - name: Install R packages
       run: |
-        R -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
+        Rscript -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
     - name: Build and test
       run: |
         set -x
-        R -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('"MAKEJ=2"'))"
-        touch temp.txt
+        Rscript -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('"MAKEJ=2"'))"
