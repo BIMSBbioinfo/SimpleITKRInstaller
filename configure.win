@@ -1,0 +1,102 @@
+@echo off
+REM ================================================================
+REM  configure.win - Windows build script for SimpleITK R package
+REM ================================================================
+
+REM Requires: git, cmake (available in Rtools 4.3+), and Rtools toolchain
+REM This script clones and builds SimpleITK from source, then moves
+REM the R wrapping into the R package directory.
+
+setlocal enabledelayedexpansion
+
+REM ---------------------------------------------------------------
+REM Configuration
+REM ---------------------------------------------------------------
+set SimpleITKGit=https://github.com/SimpleITK/SimpleITK
+set SITKTAG=v2.5.2
+set PKGBASED=%CD%
+
+echo Package base: %PKGBASED%
+
+REM ---------------------------------------------------------------
+REM Verify R_HOME
+REM ---------------------------------------------------------------
+if "%R_HOME%"=="" (
+  echo Environment variable R_HOME is not set!
+  exit /b 1
+)
+set RCALL="%R_HOME%\bin\R.exe"
+
+REM ---------------------------------------------------------------
+REM Detect compiler settings (not strictly required here)
+REM ---------------------------------------------------------------
+for /f "delims=" %%i in ('%RCALL% CMD config CC') do set CC=%%i
+for /f "delims=" %%i in ('%RCALL% CMD config CXX') do set CXX=%%i
+for /f "delims=" %%i in ('%RCALL% CMD config CPPFLAGS') do set CPPFLAGS=%%i
+for /f "delims=" %%i in ('%RCALL% CMD config CXX11FLAGS') do set CXXFLAGS=%%i
+
+echo Using compiler: %CXX%
+
+REM ---------------------------------------------------------------
+REM Determine parallel build level
+REM ---------------------------------------------------------------
+if "%MAKEJ%"=="" set MAKEJ=1
+echo Building with %MAKEJ% parallel jobs
+
+REM ---------------------------------------------------------------
+REM Create and enter SITK build directory
+REM ---------------------------------------------------------------
+if not exist SITK mkdir SITK
+cd SITK
+
+if not exist SimpleITK (
+  echo Cloning SimpleITK from %SimpleITKGit% ...
+  git clone %SimpleITKGit%
+  if errorlevel 1 exit /b 1
+)
+cd SimpleITK
+git checkout %SITKTAG%
+if errorlevel 1 exit /b 1
+
+cd ..
+set SITK_SRC=%CD%\SimpleITK
+
+if not exist Build mkdir Build
+cd Build
+
+REM ---------------------------------------------------------------
+REM Run CMake configuration
+REM ---------------------------------------------------------------
+echo Configuring CMake...
+cmake -G "NMake Makefiles" ^
+  -DWRAP_DEFAULT=OFF ^
+  -DWRAP_R=ON ^
+  -DSimpleITK_BUILD_DISTRIBUTE=ON ^
+  -DBUILD_EXAMPLES=OFF ^
+  -DBUILD_TESTING=OFF ^
+  -DCMAKE_BUILD_TYPE=MinSizeRel ^
+  -DITK_USE_BUILD_DIR:BOOL=ON ^
+  %SITK_SRC%\SuperBuild\
+if errorlevel 1 exit /b 1
+
+REM ---------------------------------------------------------------
+REM Build SimpleITK
+REM ---------------------------------------------------------------
+echo Starting build with %MAKEJ% threads...
+nmake SimpleITK-build
+if errorlevel 1 exit /b 1
+
+REM ---------------------------------------------------------------
+REM Clean up intermediate ITK build
+REM ---------------------------------------------------------------
+if exist ITK-build rmdir /s /q ITK-build
+
+REM ---------------------------------------------------------------
+REM Move built R package using R script
+REM ---------------------------------------------------------------
+cd ..
+%RCALL% -f "%PKGBASED%\sitkmove.R" --args "Build\SimpleITK-build\Wrapping\R\Packaging\SimpleITK" "%PKGBASED%"
+if errorlevel 1 exit /b 1
+
+echo === SimpleITK build completed successfully ===
+endlocal
