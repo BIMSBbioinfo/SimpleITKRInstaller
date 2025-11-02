@@ -63,9 +63,27 @@ jobs:
         R.exe --version
         
     - name: Install R packages
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+      shell: bash
       run: |
         Rscript -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
     - name: Build and test
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+      shell: bash
       run: |
         set -x
         Rscript -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('"MAKEJ=2"'))"
+        
+    - name: Install R packages (Windows)
+      if: startsWith(matrix.os, 'windows')
+      shell: pwsh
+      run: |
+        R -e "install.packages('remotes', lib='$env:R_LIBS', repos='https://cloud.r-project.org/')"
+
+    - name: Build and test (Windows)
+      if: startsWith(matrix.os, 'windows')
+      shell: pwsh
+      env:
+        ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS: 2
+      run: |
+        R -e "remotes::install_git('.', lib='$env:R_LIBS', configure.vars=c('MAKEJ=2'))"
