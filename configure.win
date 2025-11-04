@@ -54,6 +54,9 @@ export MAKEJ
   mkdir -p ../Build
   cd ../Build
 
+  echo "Path:"
+  echo $PWD
+  
   # Configure with MinGW Makefiles (Rtools toolchain)
   cmake -G "MinGW Makefiles" \
     -DWRAP_DEFAULT=OFF \
@@ -68,6 +71,7 @@ export MAKEJ
     "${BUILDDIR}/SimpleITK/SuperBuild/"
 
   echo "Parallel build using -j${MAKEJ}"
+  echo $PWD
   # Build the specific target with parallel jobs
   cmake --build . --target SimpleITK-build -- -j"${MAKEJ}"
 
@@ -78,4 +82,10 @@ export MAKEJ
   "${RCALL}" -f "${PKGBASED}/sitkmove.R" --args \
     "SimpleITK-build/Wrapping/R/Packaging/SimpleITK" \
     "${PKGBASED}"
+  
+  echo "directories:"
+  echo $(ls)
+  
+  echo "Path:"
+  echo $PWD
 )
