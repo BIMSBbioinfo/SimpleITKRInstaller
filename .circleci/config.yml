@@ -76,6 +76,7 @@ jobs:
           id: meta
           command: |
             TAG="$(R -e 'x <- read.dcf("DESCRIPTION"); cat(x[1,"Version"])')"
+            echo TAG
 
       - run:
           name: Configuration Information
@@ -111,9 +112,9 @@ jobs:
             #   echo "No files found in dist/"
             #   exit 1
             # fi
-
-            gh release view "$TAG" \
-              --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
+            gh auth status
+            # gh release view "$TAG" \
+            #   --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
 
             # gh release upload "$TAG" "${files[@]}" \
             #   --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" \
