@@ -78,6 +78,7 @@ jobs:
             PACKAGE_VERSION=$(R -e 'x <- read.dcf("DESCRIPTION"); cat(x[1,"Version"])')
             echo "export TAG=${PACKAGE_VERSION}" >> $BASH_ENV
             echo $BASH_ENV
+            cat $BASH_ENV
 
       - run:
           name: Configuration Information
