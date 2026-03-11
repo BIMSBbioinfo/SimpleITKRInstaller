@@ -75,7 +75,7 @@ jobs:
           name: Extract version from DESCRIPTION
           id: meta
           command: |
-            PACKAGE_VERSION=$(R -e 'x <- read.dcf("DESCRIPTION"); cat(x[1,"Version"])')
+            PACKAGE_VERSION=$(Rcript -e 'read.dcf("DESCRIPTION"); cat(x[1,"Version"])')
             echo "export TAG=${PACKAGE_VERSION}" >> $BASH_ENV
             echo $BASH_ENV
             cat $BASH_ENV
