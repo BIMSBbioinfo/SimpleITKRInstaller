@@ -35,6 +35,7 @@ jobs:
           name: Set environment
           command: |
             echo "export R_LIBS=$HOME/Rlibs" >> $BASH_ENV
+            
       - run:
           name: Install R << parameters.r-version >>
           command: |
@@ -57,6 +58,7 @@ jobs:
               sudo rig add $R_VERSION
               sudo rig default $R_VERSION
             fi
+            
       - run:
           name: System Dependencies
           command: |
@@ -66,7 +68,15 @@ jobs:
               sudo rm -rf /var/lib/apt/lists/*
             elif [ "$RUNNER_OS" == "macos" ]; then
               brew install cmake
+              brew install gh
             fi
+            
+      - run: 
+          name: Extract version from DESCRIPTION
+          id: meta
+          command: |
+            TAG="$(R -e 'x <- read.dcf("DESCRIPTION"); cat(x[1,"Version"])')"
+
       - run:
           name: Configuration Information
           command: |
@@ -75,16 +85,39 @@ jobs:
             cmake --version || echo "cmake not found"
             which R
             R --version
+            
       - run:
           name: Install remotes
           command: |
             R -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
+            
+      # - run:
+      #     name: Build SimpleITK binaries
+      #     no_output_timeout: 30m
+      #     command: |
+      #       set -x
+      #       # R -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('MAKEJ=4'))"
+      #       R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=4' .
+      #       mv *.tgz *.zip *.tar.gz dist/ 2>/dev/null || true
+      #       ls -lah dist
+            
       - run:
-          name: Install SimpleITK
-          no_output_timeout: 30m
+          name: Upload assets to existing GitHub release
           command: |
-            set -x
-            R -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('MAKEJ=4'))"
+            # shopt -s nullglob
+            # files=(dist/*)
+            # 
+            # if [ ${#files[@]} -eq 0 ]; then
+            #   echo "No files found in dist/"
+            #   exit 1
+            # fi
+
+            gh release view "$TAG" \
+              --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
+
+            # gh release upload "$TAG" "${files[@]}" \
+            #   --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" \
+            #   --clobber
 
 workflows:
   r-build-test:
