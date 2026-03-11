@@ -76,7 +76,7 @@ jobs:
           id: meta
           command: |
             TAG="$(R -e 'x <- read.dcf("DESCRIPTION"); cat(x[1,"Version"])')"
-            echo TAG
+            echo $TAG
 
       - run:
           name: Configuration Information
@@ -113,6 +113,8 @@ jobs:
             #   exit 1
             # fi
             gh auth status
+            echo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+            
             # gh release view "$TAG" \
             #   --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
 
