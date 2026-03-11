@@ -115,6 +115,7 @@ jobs:
             gh auth status
             echo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
             echo "$TAG"
+            echo ""
             gh release view $TAG \
               --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
 
