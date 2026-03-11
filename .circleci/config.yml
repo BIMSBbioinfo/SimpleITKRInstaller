@@ -101,7 +101,7 @@ jobs:
             # R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=4' .
             mkdir dist 
             # mv *.tgz *.zip *.tar.gz dist/ 2>/dev/null || true
-            touch temp.txt
+            echo $BASH_ENV >> temp.txt
             mv temp.txt dist/
             ls -lah dist
             
