@@ -88,9 +88,9 @@ jobs:
             R --version
             
       - run:
-          name: Install remotes
+          name: Install packages
           command: |
-            R -e "install.packages(c('remotes'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
+            R -e "install.packages(c('remotes', 'desc'), lib=c('${R_LIBS}'), repo='https://cloud.r-project.org/')"
             
       - run:
           name: Build SimpleITK binaries
