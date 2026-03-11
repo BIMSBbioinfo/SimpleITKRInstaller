@@ -118,8 +118,10 @@ jobs:
             echo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
             echo "$TAG"
             echo ""
-            gh release view $TAG \
-              --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" >/dev/null
+            touch temp.txt
+            gh release upload "$TAG" temp.txt \
+              --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" \
+              --clobber
 
             # gh release upload "$TAG" "${files[@]}" \
             #   --repo "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" \
