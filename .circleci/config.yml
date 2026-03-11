@@ -97,12 +97,9 @@ jobs:
           no_output_timeout: 30m
           command: |
             set -x
-            # R -e "remotes::install_git(c('.'), lib=c('${R_LIBS}'), configure.vars=c('MAKEJ=4'))"
-            # R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=4' .
             mkdir dist 
-            # mv *.tgz *.zip *.tar.gz dist/ 2>/dev/null || true
-            echo $BASH_ENV >> temp.txt
-            mv temp.txt dist/
+            R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=6' .
+            mv *.tgz *.zip *.tar.gz dist/ 2>/dev/null || true
             ls -lah dist
             
       - run:
