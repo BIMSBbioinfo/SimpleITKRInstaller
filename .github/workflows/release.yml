@@ -116,6 +116,7 @@ jobs:
           ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS: 2
         run: |
           $env:MAKEJ="8"
+          $env:ADDITIONAL_SITK_MODULES="-DSimpleITK_USE_ELASTIX=ON"
           Rcmd.exe INSTALL --build .
 
       - name: Collect artifacts

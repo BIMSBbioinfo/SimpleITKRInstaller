@@ -98,7 +98,7 @@ jobs:
           command: |
             set -x
             mkdir dist 
-            R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=6' .
+            R CMD INSTALL --build -l ${R_LIBS} --configure-vars='MAKEJ=6 ADDITIONAL_SITK_MODULES="-DSimpleITK_USE_ELASTIX=ON"' .
             mv *.tgz *.zip *.tar.gz dist/ 2>/dev/null || true
             ls -lah dist
             
